@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companion de Moderação · Teste de Usabilidade app-condo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#211D17;
+    --ink-soft:#4A4339;
+    --muted:#8A8174;
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --line:#E7E1D6;
+    --line-strong:#D6CEBF;
+
+    --gold:#D4A017;          /* Fase 1 — Onboarding */
+    --gold-deep:#8A6A0F;
+    --gold-wash:#FBF1D6;
+    --teal:#2E7D72;          /* Fase 2 — Exploração livre */
+    --teal-wash:#E1EFEC;
+    --brick:#B23A2E;         /* Atenção / risco */
+    --brick-wash:#F8E6E2;
+
+    --chrome:#1C1814;
+    --chrome-soft:#2A241D;
+
+    --r:14px;
+    --r-sm:9px;
+    --shadow:0 1px 2px rgba(33,29,23,.04), 0 8px 24px -16px rgba(33,29,23,.18);
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --disp:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--gold-wash)}
+
+  /* ---------- Top chrome ---------- */
+  header.bar{
+    position:sticky;top:0;z-index:50;
+    background:var(--chrome);color:#F4EFE6;
+    border-bottom:1px solid #000;
+  }
+  .bar-inner{
+    max-width:1080px;margin:0 auto;padding:11px 22px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(212,160,23,.2);transform:translateY(-1px)}
+  .brand b{font-family:var(--disp);font-weight:600;letter-spacing:.2px;font-size:15px}
+  .brand span{font-family:var(--mono);font-size:11px;color:#9C9485;letter-spacing:.5px}
+
+  .jump{display:flex;gap:2px;flex-wrap:wrap}
+  .jump a{
+    font-family:var(--mono);font-size:11px;letter-spacing:.4px;color:#C9C2B4;
+    text-decoration:none;padding:5px 9px;border-radius:6px;white-space:nowrap;
+  }
+  .jump a:hover{background:var(--chrome-soft);color:#fff}
+
+  .session{
+    display:flex;align-items:center;gap:8px;
+    background:var(--chrome-soft);border:1px solid #38312700;border-radius:8px;padding:4px 4px 4px 12px;
+  }
+  .session .clk{font-family:var(--mono);font-size:13px;font-weight:500;min-width:52px;text-align:center;color:#F4EFE6}
+  .session button{
+    font-family:var(--disp);font-weight:500;font-size:12px;cursor:pointer;
+    border:none;border-radius:6px;padding:6px 11px;background:var(--gold);color:#231B05;
+  }
+  .session button:hover{filter:brightness(1.06)}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1080px;margin:0 auto;padding:0 22px 120px}
+
+  .hero{padding:46px 0 30px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-deep);margin:0 0 14px}
+  .hero h1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,44px);line-height:1.05;letter-spacing:-.5px;margin:0 0 16px;max-width:18ch}
+  .hero p.lead{font-size:17px;color:var(--ink-soft);max-width:62ch;margin:0 0 22px}
+  .facts{display:flex;gap:10px;flex-wrap:wrap}
+  .fact{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);
+    padding:9px 13px;display:flex;flex-direction:column;gap:1px;min-width:120px;
+  }
+  .fact .k{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+  .fact .v{font-family:var(--disp);font-weight:600;font-size:14.5px}
+
+  /* run of show */
+  .ros{display:flex;gap:0;margin:26px 0 0;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;flex-wrap:wrap}
+  .ros .leg{flex:1 1 140px;padding:11px 14px;border-right:1px solid var(--line);background:var(--card)}
+  .ros .leg:last-child{border-right:none}
+  .ros .leg .t{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted)}
+  .ros .leg .n{font-family:var(--disp);font-weight:600;font-size:14px;margin-top:2px;display:flex;align-items:center;gap:7px}
+  .pill{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .pill.g{background:var(--gold)} .pill.t{background:var(--teal)} .pill.n{background:var(--ink-soft)}
+
+  /* ---------- Section ---------- */
+  section{padding:40px 0 6px;scroll-margin-top:64px}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+  .sec-head .lhs{display:flex;align-items:baseline;gap:14px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
+  .sec-head h2{font-family:var(--disp);font-weight:600;font-size:24px;letter-spacing:-.3px;margin:0}
+  .sec-head .phase-tag{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+    padding:4px 9px;border-radius:20px;font-weight:500;
+  }
+  .tag-g{background:var(--gold-wash);color:var(--gold-deep)}
+  .tag-t{background:var(--teal-wash);color:var(--teal)}
+  .sec-sub{color:var(--ink-soft);max-width:64ch;margin:-8px 0 22px;font-size:15px}
+
+  /* ---------- Cards / tasks ---------- */
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;
+  }
+  .card.g{border-left:4px solid var(--gold)}
+  .card.t{border-left:4px solid var(--teal)}
+
+  .task-head{
+    display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;
+  }
+  .task-head:hover{background:#FCFAF6}
+  .tnum{
+    font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.5px;
+    min-width:54px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    background:var(--gold-wash);color:var(--gold-deep);flex-shrink:0;
+  }
+  .card.t .tnum{background:var(--teal-wash);color:var(--teal)}
+  .task-head h3{font-family:var(--disp);font-weight:600;font-size:17px;margin:0;flex:1;letter-spacing:-.2px}
+  .chev{color:var(--muted);transition:transform .2s;flex-shrink:0}
+  .card.collapsed .chev{transform:rotate(-90deg)}
+  .card.collapsed .task-body{display:none}
+
+  .task-body{padding:2px 20px 20px;border-top:1px solid var(--line)}
+
+  /* read aloud */
+  .read{
+    position:relative;background:var(--gold-wash);border-radius:var(--r-sm);
+    padding:15px 18px 15px 18px;margin:16px 0;border:1px solid #F0E2B8;
+  }
+  .card.t .read{background:var(--teal-wash);border-color:#C6E0DB}
+  .read .lbl{
+    font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--gold-deep);font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:7px;
+  }
+  .card.t .read .lbl{color:var(--teal)}
+  .read p{margin:0;font-size:16.5px;line-height:1.5;color:var(--ink);font-weight:500}
+  .read p + p{margin-top:9px}
+
+  .blocklbl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:18px 0 9px;
+  }
+
+  /* expected path as steps */
+  .path{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .step{
+    background:#F6F3EC;border:1px solid var(--line);border-radius:6px;
+    padding:5px 10px;font-size:13.5px;color:var(--ink-soft);
+  }
+  .step code{font-family:var(--mono);font-size:12px;background:transparent;color:var(--gold-deep);padding:0}
+  .arr{color:var(--line-strong);font-family:var(--mono)}
+
+  /* observe checklist */
+  .obs{list-style:none;margin:0;padding:0}
+  .obs li{display:flex;gap:11px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .obs li:last-child{border-bottom:none}
+  .obs input[type=checkbox]{
+    appearance:none;width:19px;height:19px;border:1.5px solid var(--line-strong);border-radius:5px;
+    margin:1px 0 0;cursor:pointer;flex-shrink:0;position:relative;background:#fff;transition:.12s;
+  }
+  .obs input:checked{background:var(--gold);border-color:var(--gold)}
+  .card.t .obs input:checked{background:var(--teal);border-color:var(--teal)}
+  .obs input:checked::after{content:"";position:absolute;left:5.5px;top:2px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .obs label{font-size:14.5px;line-height:1.45;color:var(--ink-soft);cursor:pointer}
+  .obs input:checked + label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+
+  /* task footer: timer + rating */
+  .tfoot{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    margin-top:18px;padding-top:15px;border-top:1px solid var(--line);
+  }
+  .timer{display:flex;align-items:center;gap:9px}
+  .timer button{
+    font-family:var(--disp);font-weight:500;font-size:12.5px;cursor:pointer;
+    border:1px solid var(--line-strong);background:#fff;color:var(--ink);
+    border-radius:7px;padding:6px 13px;display:flex;align-items:center;gap:6px;
+  }
+  .timer button:hover{border-color:var(--ink-soft)}
+  .timer button.running{background:var(--brick);border-color:var(--brick);color:#fff}
+  .timer .disp{font-family:var(--mono);font-size:15px;font-weight:500;min-width:54px}
+  .rate{display:flex;align-items:center;gap:8px;margin-left:auto}
+  .rate .rl{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+  .rate .opts{display:flex;gap:4px}
+  .rate b{
+    width:30px;height:30px;border-radius:7px;border:1px solid var(--line-strong);background:#fff;
+    font-family:var(--mono);font-weight:500;font-size:13px;color:var(--ink-soft);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.1s;
+  }
+  .rate b:hover{border-color:var(--gold)}
+  .rate b.on{background:var(--gold);border-color:var(--gold);color:#231B05;font-weight:700}
+
+  .hint{font-size:13.5px;color:var(--muted);background:#F6F3EC;border-radius:7px;padding:9px 12px;margin-top:12px;display:flex;gap:8px}
+  .hint::before{content:"i";font-family:var(--mono);font-weight:700;color:var(--gold-deep);background:var(--gold-wash);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px}
+
+  /* notes */
+  .notefield{margin-top:16px}
+  .notefield .blocklbl{margin:0 0 7px}
+  .notefield textarea{
+    width:100%;min-height:60px;resize:vertical;display:block;
+    font-family:var(--body);font-size:14px;line-height:1.5;color:var(--ink);
+    background:#FCFAF6;border:1px solid var(--line);border-radius:var(--r-sm);
+    padding:10px 12px;outline:none;transition:border-color .15s,box-shadow .15s;
+  }
+  .notefield textarea::placeholder{color:var(--muted)}
+  .notefield textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-wash)}
+  .card.t .notefield textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-wash)}
+
+  /* ---------- Setup / table ---------- */
+  .env{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;font-size:14px}
+  .env th{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:left;padding:11px 14px;background:#F6F3EC;border-bottom:1px solid var(--line);font-weight:600}
+  .env td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft)}
+  .env tr:last-child td{border-bottom:none}
+  .env .ph{font-family:var(--disp);font-weight:600;color:var(--ink);white-space:nowrap}
+  .env code{font-family:var(--mono);font-size:12px;background:#F0EBE0;color:var(--gold-deep);padding:2px 6px;border-radius:5px}
+
+  .warn{
+    background:var(--brick-wash);border:1px solid #EBC9C2;border-left:4px solid var(--brick);
+    border-radius:var(--r-sm);padding:15px 18px;margin:16px 0;
+  }
+  .warn .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--brick);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  .warn ul{margin:0;padding-left:18px}
+  .warn li{margin:5px 0;font-size:14.5px;color:var(--ink-soft)}
+  .warn code{font-family:var(--mono);font-size:12.5px;background:#fff;color:var(--brick);padding:1px 6px;border-radius:5px;border:1px solid #EBC9C2}
+
+  .notebox{background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;margin:14px 0}
+  .notebox .blocklbl{margin-top:0}
+  .qa{counter-reset:q;list-style:none;padding:0;margin:0}
+  .qa li{display:flex;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:15px;color:var(--ink-soft)}
+  .qa li:last-child{border-bottom:none}
+  .qa li::before{counter-increment:q;content:counter(q);font-family:var(--mono);font-weight:700;font-size:12px;color:var(--gold-deep);background:var(--gold-wash);min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+  /* metrics grid */
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .metric{background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px}
+  .metric .m{font-family:var(--disp);font-weight:600;font-size:15px;margin-bottom:4px}
+  .metric .d{font-size:13.5px;color:var(--muted);line-height:1.45}
+
+  /* checklist columns */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .col h4{font-family:var(--disp);font-weight:600;font-size:14px;margin:0 0 11px;display:flex;align-items:center;gap:8px}
+  .col h4 .pill{width:7px;height:7px;border-radius:2px}
+  .chk{list-style:none;margin:0;padding:0}
+  .chk li{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+  .chk input{appearance:none;width:18px;height:18px;border:1.5px solid var(--line-strong);border-radius:5px;cursor:pointer;flex-shrink:0;margin-top:1px;background:#fff;position:relative}
+  .chk input:checked{background:var(--ink);border-color:var(--ink)}
+  .chk input:checked::after{content:"";position:absolute;left:5px;top:2px;width:4.5px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .chk label{font-size:14px;color:var(--ink-soft);cursor:pointer;line-height:1.4}
+  .chk input:checked + label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+
+  /* map */
+  .map{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .map .col h4{margin-bottom:13px}
+  .route{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .route:last-child{border-bottom:none}
+  .route span{color:var(--ink-soft)}
+  .route code{font-family:var(--mono);font-size:12px;color:var(--gold-deep);background:#F6F3EC;padding:2px 7px;border-radius:5px}
+  .card.t-route .route code, .map .col.t code{color:var(--teal)}
+
+  /* controls */
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+  .toolbar button{
+    font-family:var(--disp);font-weight:500;font-size:12.5px;cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--card);color:var(--ink);
+    border-radius:8px;padding:7px 13px;display:flex;align-items:center;gap:7px;
+  }
+  .toolbar button:hover{border-color:var(--ink-soft)}
+
+  footer.fin{border-top:1px solid var(--line);margin-top:50px;padding:26px 0 0;color:var(--muted);font-size:13px;font-family:var(--mono);letter-spacing:.3px}
+
+  @media (max-width:680px){
+    .jump{display:none}
+    .map{grid-template-columns:1fr}
+    .rate{margin-left:0;width:100%;justify-content:space-between}
+    main{padding:0 15px 96px}
+    .bar-inner{padding:9px 15px;gap:10px}
+    .brand{margin-right:auto}
+    .brand span{display:none}
+    .session{padding:3px 3px 3px 10px}
+
+    /* tap targets maiores */
+    .task-head{padding:15px 16px;gap:11px}
+    .task-body{padding:2px 16px 18px}
+    .obs li{padding:9px 0}
+    .obs input[type=checkbox]{width:23px;height:23px}
+    .obs input:checked::after{left:7px;top:3px}
+    .chk li{padding:8px 0}
+    .chk input{width:22px;height:22px}
+    .chk input:checked::after{left:6.5px;top:3px}
+    .rate b{width:36px;height:36px;font-size:14px}
+    .timer button{padding:9px 14px}
+
+    /* evita zoom do iOS ao focar o campo (precisa >=16px) */
+    .notefield textarea{font-size:16px}
+
+    /* tabela de ambientes empilha em cartões */
+    .env, .env tbody, .env tr, .env td{display:block;width:100%}
+    .env thead{display:none}
+    .env{border:none;background:transparent}
+    .env tr{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);margin-bottom:12px;padding:4px 2px;box-shadow:var(--shadow)}
+    .env tr:nth-child(2){border-left-color:var(--teal)}
+    .env td{border:none!important;padding:9px 16px;position:relative}
+    .env td + td{border-top:1px dashed var(--line)!important}
+    .env td::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+    .env td.ph::before{display:none}
+    .env td.ph{font-size:16px}
+    .env code{white-space:normal;word-break:break-all}
+
+    .read p{font-size:16px}
+    .sec-head h2{font-size:21px}
+    .hero{padding:34px 0 24px}
+  }
+  @media (max-width:400px){
+    .facts{width:100%}
+    .fact{flex:1 1 calc(50% - 5px);min-width:0}
+    .ros .leg{flex:1 1 100%;border-right:none;border-bottom:1px solid var(--line)}
+    .ros .leg:last-child{border-bottom:none}
+    .toolbar button{flex:1 1 calc(50% - 4px);justify-content:center}
+    .step{font-size:13px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+
+  /* ---------- Print ---------- */
+  @media print{
+    *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    header.bar{position:static;background:#fff;color:#000;border-bottom:2px solid #000}
+    .jump,.session,.toolbar,.chev,.brand .dot{display:none!important}
+    body{background:#fff;font-size:11.5px}
+    .card,.col,.metric,.fact,.notebox,.env{box-shadow:none;break-inside:avoid}
+    .card.collapsed .task-body{display:block!important}
+    .read{background:#FBF6E6!important}
+    section{padding:18px 0 0;break-inside:avoid}
+    .hero{padding:14px 0}
+    a[href]:after{content:""}
+
+    /* checkboxes: marca preta legível mesmo sem cor */
+    .obs input,.chk input{background:#fff!important;border:1.5px solid #000!important}
+    .obs input:checked,.chk input:checked{background:#000!important;border-color:#000!important}
+    .obs input:checked::after,.chk input:checked::after{border-color:#fff!important}
+    .obs input:checked + label,.chk input:checked + label{color:#000!important;text-decoration:none!important}
+
+    /* rodapé das tarefas: mostra tempo e nota como texto estático */
+    .tfoot{display:flex!important;border-top:1px solid #ccc}
+    .timer button{display:none!important}
+    .timer .disp::before{content:"Tempo: ";font-family:var(--body);color:#000}
+    .timer .disp{color:#000}
+    .rate b{background:#fff!important;border:1px solid #000!important;color:#000!important}
+    .rate b.on{background:#000!important;color:#fff!important}
+
+    /* anotações: esconde campos vazios, deixa preenchidos limpos */
+    .notefield textarea{background:#fff!important;border:1px solid #999!important;resize:none;min-height:auto;color:#000!important}
+    .notefield:has(textarea:placeholder-shown){display:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <div class="brand">
+      <span class="dot"></span>
+      <b>Companion de Moderação</b>
+      <span>app-condo · síndico</span>
+    </div>
+    <nav class="jump">
+      <a href="#setup">Setup</a>
+      <a href="#abertura">Abertura</a>
+      <a href="#fase1">Fase 1</a>
+      <a href="#fase2">Fase 2</a>
+      <a href="#pos">Pós</a>
+      <a href="#checklist">Checklist</a>
+      <a href="#mapa">Mapa</a>
+    </nav>
+    <div class="session">
+      <span class="clk" id="sessClk">00:00</span>
+      <button id="sessBtn" onclick="toggleSession()">Iniciar sessão</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="eyebrow">Teste de usabilidade · protótipo mobile-first</p>
+    <h1>Gestão de condomínio, do primeiro acesso ao dia a dia.</h1>
+    <p class="lead">Roteiro de campo para conduzir a sessão com um síndico. Duas fases: primeiro validar o <b>onboarding de primeiro acesso</b>, depois observar a <b>descoberta e navegação livre</b> do app já configurado. Pensar em voz alta o tempo todo.</p>
+    <div class="facts">
+      <div class="fact"><span class="k">Persona</span><span class="v">Síndico / Admin.</span></div>
+      <div class="fact"><span class="k">Participantes</span><span class="v">1 por sessão</span></div>
+      <div class="fact"><span class="k">Duração</span><span class="v">30–40 min</span></div>
+      <div class="fact"><span class="k">Formato</span><span class="v">Presencial / remoto</span></div>
+      <div class="fact"><span class="k">Método</span><span class="v">Think aloud</span></div>
+    </div>
+
+    <div class="ros">
+      <div class="leg"><div class="t">~3 MIN</div><div class="n"><span class="pill n"></span>Abertura</div></div>
+      <div class="leg"><div class="t">~18 MIN</div><div class="n"><span class="pill g"></span>Fase 1 · Onboarding</div></div>
+      <div class="leg"><div class="t">~12 MIN</div><div class="n"><span class="pill t"></span>Fase 2 · Livre</div></div>
+      <div class="leg"><div class="t">~5 MIN</div><div class="n"><span class="pill n"></span>Pós-teste</div></div>
+    </div>
+
+    <div class="toolbar">
+      <button onclick="toggleAll(false)">⊕ Expandir tudo</button>
+      <button onclick="toggleAll(true)">⊖ Recolher tudo</button>
+      <button onclick="window.print()">⎙ Imprimir / PDF</button>
+      <button onclick="resetAll()">↺ Limpar marcações</button>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">00</span><h2>Antes de começar — os dois ambientes</h2></div></div>
+    <p class="sec-sub">O teste usa duas versões do app, uma por fase. Deixe as duas prontas <b>antes</b> da sessão.</p>
+
+    <table class="env">
+      <thead><tr><th>Fase</th><th>Branch</th><th>Estado</th><th>Como o participante entra</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="ph" data-l="Fase"><span class="pill g" style="display:inline-block;margin-right:6px;vertical-align:middle"></span>Fase 1 · Onboarding</td>
+          <td data-l="Branch"><code>feat/onboarding-primeiro-acesso</code></td>
+          <td data-l="Estado">Onboarding zerado (0 etapas concluídas)</td>
+          <td data-l="Como entra">Home mostra as "Etapas de configuração" em 0%</td>
+        </tr>
+        <tr>
+          <td class="ph" data-l="Fase"><span class="pill t" style="display:inline-block;margin-right:6px;vertical-align:middle"></span>Fase 2 · Livre</td>
+          <td data-l="Branch"><code>main</code></td>
+          <td data-l="Estado">Fluxo já preenchido, Home padrão liberada</td>
+          <td data-l="Como entra">Home mostra Termômetro, Reservas, Chamados, Atividades</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warn">
+      <div class="lbl">⚠ Atenção técnica — não deixe escapar</div>
+      <ul>
+        <li>O estado do onboarding vive <b>em memória</b> (<code>src/data/mock/onboarding.ts</code>): <b>dar refresh zera o progresso</b>. Não recarregue a página no meio da Fase 1.</li>
+        <li>Use <code>resetOnboarding()</code> para reiniciar o fluxo entre participantes sem rebuildar.</li>
+        <li>Rode em viewport mobile (DevTools → iPhone 14 Pro · 393×852) ou num celular real apontando para o <code>npm run dev</code>.</li>
+        <li>Tenha um link/QR separado por branch — ou faça <code>git checkout</code> + restart entre as fases.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ABERTURA -->
+  <section id="abertura">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">01</span><h2>Abertura</h2></div><span class="phase-tag tag-g" style="background:#F1EEE7;color:var(--ink-soft)">~3 min</span></div>
+
+    <div class="card">
+      <div class="task-body" style="border-top:none;padding-top:18px">
+        <div class="read">
+          <div class="lbl" style="color:var(--ink-soft)">▸ Leia em voz alta</div>
+          <p>"Obrigado por participar. Você vai testar o protótipo de um app para <b>síndicos</b> gerenciarem o condomínio. Não existe resposta certa ou errada — <b>quem está sendo avaliado é o app, não você</b>. Se algo travar ou confundir, ótimo: é exatamente o que queremos descobrir."</p>
+          <p>"Peço que <b>pense em voz alta</b>: diga o que está olhando, o que espera que aconteça ao tocar em algo, e o que te surpreendeu. Pode ser bem honesto, inclusive com críticas."</p>
+          <p>"É um protótipo: alguns dados são fictícios e nem todo botão leva a uma tela final. Tudo bem. <b>Posso gravar a tela e o áudio?</b>"</p>
+        </div>
+
+        <div class="blocklbl">Perguntas de aquecimento</div>
+        <ol class="qa">
+          <li>Você já foi síndico ou ajudou a administrar um condomínio? Como faz hoje (papel, WhatsApp, outro app)?</li>
+          <li>Qual a parte mais chata da gestão de um condomínio pra você?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- FASE 1 -->
+  <section id="fase1">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">02</span><h2>Fase 1 — Onboarding de primeiro acesso</h2></div><span class="phase-tag tag-g">Branch · feat/onboarding</span></div>
+    <p class="sec-sub"><b>Cenário:</b> "Você acabou de baixar o app e abriu pela primeira vez como síndico do <i>Residencial Jardim das Flores</i>. Vamos deixá-lo pronto para uso."</p>
+
+    <!-- T0 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T0</div><h3>Primeira impressão (sem tocar em nada)</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Pergunte</div><p>"Olhando essa primeira tela, o que esse app está te pedindo para fazer? O que você faria primeiro?"</p></div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o0a"><label for="o0a">Entende que são <b>4 etapas</b>?</label></li>
+          <li><input type="checkbox" id="o0b"><label for="o0b">Percebe a barra de progresso e o cartão "Vamos configurar seu condomínio!"?</label></li>
+          <li><input type="checkbox" id="o0c"><label for="o0c">Sabe que pode tocar nos cards?</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+
+    <!-- T1 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T1</div><h3>Criar o condomínio</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Cadastre o seu condomínio no app."</p></div>
+        <div class="blocklbl">Caminho esperado</div>
+        <div class="path">
+          <span class="step">Card "Criar condomínio"</span><span class="arr">→</span>
+          <span class="step">Formulário (nome, endereço, nº blocos, nº aptos)</span><span class="arr">→</span>
+          <span class="step">"Criar condomínio"</span><span class="arr">→</span>
+          <span class="step">Drawer de sucesso</span><span class="arr">→</span>
+          <span class="step">"Voltar para Home"</span>
+        </div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o1a"><label for="o1a">Entende quais campos são obrigatórios (asterisco vermelho)?</label></li>
+          <li><input type="checkbox" id="o1b"><label for="o1b">Ao enviar vazio, as mensagens de erro ajudam?</label></li>
+          <li><input type="checkbox" id="o1c"><label for="o1c">Campos numéricos (blocos/aptos) são confortáveis no teclado mobile?</label></li>
+          <li><input type="checkbox" id="o1d"><label for="o1d">Ao voltar, percebe que o card virou "Concluído" e o progresso subiu para <b>25%</b>?</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+
+    <!-- T2 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T2</div><h3>Cadastrar / convidar moradores</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Agora convide alguns moradores para o app."</p></div>
+        <div class="blocklbl">Caminho esperado</div>
+        <div class="path">
+          <span class="step">Card "Cadastrar moradores"</span><span class="arr">→</span>
+          <span class="step">Alternar E-mail / Telefone</span><span class="arr">→</span>
+          <span class="step">Adicionar 1+ contatos <b>ou</b> gerar link</span><span class="arr">→</span>
+          <span class="step">"Concluir cadastro"</span>
+        </div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o2a"><label for="o2a">Entende que pode convidar por e-mail, telefone <b>ou</b> link?</label></li>
+          <li><input type="checkbox" id="o2b"><label for="o2b">Descobre o botão "+" para adicionar à lista? Tenta dar Enter?</label></li>
+          <li><input type="checkbox" id="o2c"><label for="o2c">Percebe que "Concluir cadastro" fica <b>desabilitado</b> até ter 1 convite/link? Frustra ou faz sentido?</label></li>
+          <li><input type="checkbox" id="o2d"><label for="o2d">Testa e-mail/telefone inválido — o toast é claro?</label></li>
+          <li><input type="checkbox" id="o2e"><label for="o2e">Usa "Gerar link" e "Copiar"? Entende o feedback de copiado?</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+
+    <!-- T3 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T3</div><h3>Adicionar uma área comum</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Cadastre uma área comum do condomínio, por exemplo a piscina ou o salão de festas."</p></div>
+        <div class="blocklbl">Caminho esperado — wizard de 3 passos</div>
+        <div class="path">
+          <span class="step"><b>1.</b> Nome, valor (ou "não possui"), categoria, status, instruções</span><span class="arr">→</span>
+          <span class="step"><b>2.</b> Capacidade, tempo de uso, intervalo, quem pode reservar</span><span class="arr">→</span>
+          <span class="step"><b>3.</b> Dias da semana + faixas de horário</span><span class="arr">→</span>
+          <span class="step">"Cadastrar" → sucesso</span>
+        </div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o3a"><label for="o3a">A barra de progresso de 3 passos é compreendida? Sabe que está no passo 1 de 3?</label></li>
+          <li><input type="checkbox" id="o3b"><label for="o3b">O "Avançar" valida só o passo atual — alguma validação surpreende/trava?</label></li>
+          <li><input type="checkbox" id="o3c"><label for="o3c">O checkbox "Não possui valor" desabilitando o campo de valor é claro?</label></li>
+          <li><input type="checkbox" id="o3d"><label for="o3d">No passo 3, entende que precisa <b>ativar</b> o dia (switch) antes do horário? O erro (fecha antes de abre / nenhum dia) é claro?</label></li>
+          <li><input type="checkbox" id="o3e"><label for="o3e">Nota o botão "Gerar instruções" (IA)? Gera expectativa? (hoje é só um toast "em breve")</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+
+    <!-- T4 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T4</div><h3>Criar as FAQs</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Por fim, cadastre as perguntas frequentes que os moradores costumam fazer."</p></div>
+        <div class="blocklbl">Caminho esperado</div>
+        <div class="path">
+          <span class="step">Card "Criar FAQs"</span><span class="arr">→</span>
+          <span class="step"><b>Manual:</b> pergunta + resposta → "Salvar pergunta"</span>
+          <span class="arr">ou</span>
+          <span class="step"><b>De documento:</b> upload → "Gerar" → revisar/editar (1 de 3) → "Salvar perguntas"</span>
+        </div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o4a"><label for="o4a">Entende a escolha "manual" vs "gerar de um documento"?</label></li>
+          <li><input type="checkbox" id="o4b"><label for="o4b">No fluxo gerado: percebe que pode <b>editar</b> antes de salvar? Usa as setas de navegação?</label></li>
+          <li><input type="checkbox" id="o4c"><label for="o4c">Os 3 botões do rodapé (Cancelar / Gerar novas / Salvar) competem por atenção? Sabe qual é a ação principal?</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+
+    <!-- T5 -->
+    <div class="card g" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">T5</div><h3>Fechamento do onboarding</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="hint">Após a 4ª etapa, ao voltar à Home, o onboarding está <b>100%</b>. A transição para a Home padrão acontece automaticamente.</div>
+        <div class="read"><div class="lbl">▸ Pergunte</div><p>"Como você sabe que terminou de configurar? O que você esperaria que acontecesse agora?"</p></div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o5a"><label for="o5a">Percebe que terminou?</label></li>
+          <li><input type="checkbox" id="o5b"><label for="o5b">Entende que a Home "mudou" / o app foi liberado?</label></li>
+        </ul>
+        <div class="tfoot" data-foot></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FASE 2 -->
+  <section id="fase2">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">03</span><h2>Fase 2 — Exploração livre do app configurado</h2></div><span class="phase-tag tag-t">Branch · main</span></div>
+    <p class="sec-sub"><b>Transição:</b> troque para a branch <code style="font-family:var(--mono);background:#F0EBE0;padding:1px 6px;border-radius:5px">main</code> e diga: "Agora imagine que o condomínio já está configurado e em uso há algumas semanas. Explore o app como se fosse o seu dia a dia de síndico."</p>
+
+    <!-- exploração espontânea -->
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">6.1</div><h3>Exploração espontânea <span style="font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted)">~3 min · sem tarefa</span></h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Diga</div><p>"Vá clicando por onde tiver curiosidade e me contando o que cada parte parece fazer."</p></div>
+        <div class="blocklbl">Observar</div>
+        <ul class="obs">
+          <li><input type="checkbox" id="o61a"><label for="o61a">O que chama atenção primeiro?</label></li>
+          <li><input type="checkbox" id="o61b"><label for="o61b">Entende o <b>Termômetro do condomínio</b>?</label></li>
+          <li><input type="checkbox" id="o61c"><label for="o61c">Usa a barra inferior ou os cards?</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="blocklbl" style="margin:22px 0 10px">Descoberta leve — só para ver se ele <i>se acha</i>. Uma de cada vez, sem indicar o caminho; sem cronometrar, foco em conseguir achar + reação.</p>
+
+    <!-- directed tasks -->
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D1</div><h3>Reservas</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Veja as reservas de áreas comuns e abra os detalhes de uma delas."</p></div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D2</div><h3>Chamados</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Um morador abriu um chamado. Encontre-o e veja a conversa."</p></div>
+        <div class="hint">Observe se o <b>badge vermelho</b> na aba Chamados é notado.</div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D3</div><h3>Avisos</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Publique um aviso/comunicado para os moradores."</p></div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D4</div><h3>Moradores</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Procure a ficha de um morador específico."</p></div>
+        <div class="hint">Está em <b>"Mais" → Moradores</b>. Encontra?</div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D5</div><h3>Assembleias</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Veja a próxima assembleia e suas pautas."</p></div>
+        <div class="hint">Card na Home + <b>"Mais" → Assembleias</b>.</div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D6</div><h3>FAQ / Dúvidas</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Um morador perguntou as regras da piscina. Onde você encontra/edita isso?"</p></div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">D7</div><h3>Perfil / Configurações</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Tarefa</div><p>"Onde você ajustaria seus dados ou configurações?"</p></div>
+        <div class="hint">Ícone de <b>engrenagem</b> no header do "Mais".</div>
+      </div>
+    </div>
+
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">★</div><h3>Observar em todas as tarefas dirigidas</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <ul class="obs">
+          <li><input type="checkbox" id="ofa"><label for="ofa">Recorre à barra inferior ou ao menu "Mais"? As 4 seções dentro de "Mais" são descobertas ou ficam escondidas?</label></li>
+          <li><input type="checkbox" id="ofb"><label for="ofb">Usa o botão "voltar" do header com confiança?</label></li>
+          <li><input type="checkbox" id="ofc"><label for="ofc">Em algum momento se perde sobre "onde estou"?</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- perguntas abertas de navegação -->
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">?</div><h3>Perguntas abertas de navegação</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="hint">Foco real da Fase 2. Faça em tom de conversa, deixe ele divagar — você quer a percepção, não a tarefa.</div>
+        <div class="read"><div class="lbl">▸ Pergunte</div>
+          <p>"O que você acha da navegação no geral? Fluiu ou travou em algum ponto?"</p>
+          <p>"As informações nas telas estão claras? Teve algo que você não entendeu de cara?"</p>
+          <p>"As seções foram fáceis de achar? Alguma você esperava em outro lugar?"</p>
+          <p>"Tem alguma coisa que parece estar faltando ou sobrando aqui?"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- pós exploração -->
+    <div class="card t" data-task>
+      <div class="task-head" onclick="toggleCard(this)">
+        <div class="tnum">6.3</div><h3>Pós-exploração</h3>
+        <svg class="chev" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="read"><div class="lbl">▸ Pergunte</div>
+          <p>"Teve alguma seção que você procurou e não achou, ou que achou que estaria em outro lugar?"</p>
+          <p>"O que faltou para esse ser o app que você usaria de verdade?"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section id="metricas">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">04</span><h2>O que medir por tarefa</h2></div></div>
+    <div class="metrics">
+      <div class="metric"><div class="m">Sucesso</div><div class="d">Concluiu sozinho / com ajuda / não concluiu</div></div>
+      <div class="metric"><div class="m">Tempo</div><div class="d">Do enunciado até a conclusão (use o cronômetro de cada tarefa)</div></div>
+      <div class="metric"><div class="m">Erros &amp; travas</div><div class="d">Toques errados, becos sem saída, validações que confundiram</div></div>
+      <div class="metric"><div class="m">Hesitações</div><div class="d">Pontos onde parou para pensar &gt; 3s</div></div>
+      <div class="metric"><div class="m">Comentários verbais</div><div class="d">Frases espontâneas, positivas e negativas</div></div>
+      <div class="metric"><div class="m">Facilidade percebida</div><div class="d">Nota 1–5 ao fim de cada tarefa ("Quão fácil foi?")</div></div>
+    </div>
+  </section>
+
+  <!-- PÓS -->
+  <section id="pos">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">05</span><h2>Perguntas pós-teste</h2></div><span class="phase-tag" style="background:#F1EEE7;color:var(--ink-soft)">~5 min</span></div>
+    <div class="notebox">
+      <ol class="qa">
+        <li>Em uma palavra, como foi configurar o condomínio pela primeira vez?</li>
+        <li>O que foi mais fácil? E o mais confuso ou irritante?</li>
+        <li>As 4 etapas iniciais fizeram sentido na ordem em que apareceram? Faltou ou sobrou alguma?</li>
+        <li>Você confiaria nesse app para gerenciar seu condomínio? Por quê?</li>
+        <li>Se pudesse mudar <b>uma</b> coisa, qual seria?</li>
+        <li><i>(Opcional)</i> Aplicar o <b>SUS</b> (System Usability Scale — 10 afirmações de 1 a 5) para uma nota comparável entre sessões.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section id="checklist">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">06</span><h2>Checklist do moderador</h2></div></div>
+    <div class="cols">
+      <div class="col">
+        <h4><span class="pill g"></span>Antes da sessão</h4>
+        <ul class="chk">
+          <li><input type="checkbox" id="c1"><label for="c1">Branch <code style="font-family:var(--mono);font-size:12px">feat/onboarding</code> rodando, onboarding zerado, viewport mobile.</label></li>
+          <li><input type="checkbox" id="c2"><label for="c2">Branch <code style="font-family:var(--mono);font-size:12px">main</code> pronta para a Fase 2 (link/QR ou checkout preparado).</label></li>
+          <li><input type="checkbox" id="c3"><label for="c3">Gravação de tela + áudio testada; termo de consentimento.</label></li>
+          <li><input type="checkbox" id="c4"><label for="c4">Planilha de observação aberta (uma linha por tarefa).</label></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4><span class="pill t"></span>Durante</h4>
+        <ul class="chk">
+          <li><input type="checkbox" id="c5"><label for="c5">Reforçar "pense em voz alta" sempre que silenciar.</label></li>
+          <li><input type="checkbox" id="c6"><label for="c6"><b>Não</b> ensinar o caminho; ao travar, perguntar "o que você tentaria agora?".</label></li>
+          <li><input type="checkbox" id="c7"><label for="c7">Não dar refresh na Fase 1 (zera o progresso em memória).</label></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4><span class="pill n"></span>Depois</h4>
+        <ul class="chk">
+          <li><input type="checkbox" id="c8"><label for="c8"><code style="font-family:var(--mono);font-size:12px">resetOnboarding()</code> / restart para o próximo participante.</label></li>
+          <li><input type="checkbox" id="c9"><label for="c9">Consolidar achados por severidade (crítico / sério / cosmético).</label></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAPA -->
+  <section id="mapa">
+    <div class="sec-head"><div class="lhs"><span class="sec-num">07</span><h2>Mapa de telas (apoio rápido)</h2></div></div>
+    <div class="map">
+      <div class="col">
+        <h4><span class="pill g"></span>Onboarding · feat/onboarding</h4>
+        <div class="route"><span>Home com etapas</span><code>/</code></div>
+        <div class="route"><span>Criar condomínio</span><code>/onboarding/condominio</code></div>
+        <div class="route"><span>Cadastrar moradores</span><code>/onboarding/moradores</code></div>
+        <div class="route"><span>Área comum (3 passos)</span><code>/areas-comuns/cadastrar</code></div>
+        <div class="route"><span>Criar FAQ (manual / IA)</span><code>/duvidas/criar</code></div>
+      </div>
+      <div class="col t">
+        <h4><span class="pill t"></span>App configurado · main</h4>
+        <div class="route"><span>Home padrão</span><code>/</code></div>
+        <div class="route"><span>Reservas</span><code>/reservas</code></div>
+        <div class="route"><span>Chamados</span><code>/chamados</code></div>
+        <div class="route"><span>Avisos</span><code>/avisos</code></div>
+        <div class="route"><span>Mais (Moradores, Áreas, Assembleias, FAQ)</span><code>/mais</code></div>
+        <div class="route"><span>Perfil</span><code>/perfil</code></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="fin">app-condo · roteiro de teste de usabilidade · marcações e cronômetros ficam só neste navegador</footer>
+</main>
+
+<script>
+  /* ---- per-task footer (timer + rating) injected ---- */
+  document.querySelectorAll('[data-foot]').forEach((foot,i)=>{
+    foot.innerHTML = `
+      <div class="timer">
+        <button onclick="tick(this)"><span class="ico">▶</span><span class="lab">Iniciar</span></button>
+        <span class="disp" data-disp>00:00</span>
+      </div>
+      <div class="rate">
+        <span class="rl">Facilidade</span>
+        <div class="opts">${[1,2,3,4,5].map(n=>`<b onclick="rate(this,${n})">${n}</b>`).join('')}</div>
+      </div>`;
+  });
+
+  /* ---- notes field injected into every block ---- */
+  let noteI = 0;
+  document.querySelectorAll('.task-body, .notebox').forEach(body=>{
+    const id = 'n'+(noteI++);
+    const wrap = document.createElement('div');
+    wrap.className = 'notefield';
+    wrap.innerHTML = `<div class="blocklbl">Anotações</div><textarea data-note="${id}" rows="2" placeholder="Observações, falas marcantes, travas, ideias…"></textarea>`;
+    body.appendChild(wrap);
+  });
+
+  /* ---- per-task stopwatch ---- */
+  const timers = new Map();
+  function tick(btn){
+    const wrap = btn.closest('.timer');
+    const disp = wrap.querySelector('[data-disp]');
+    const id = disp;
+    if(timers.has(id)){
+      clearInterval(timers.get(id).int);
+      timers.delete(id);
+      btn.classList.remove('running');
+      btn.querySelector('.ico').textContent='▶';
+      btn.querySelector('.lab').textContent='Retomar';
+    } else {
+      const base = disp.dataset.elapsed ? parseInt(disp.dataset.elapsed) : 0;
+      const start = Date.now() - base*1000;
+      const int = setInterval(()=>{
+        const s = Math.floor((Date.now()-start)/1000);
+        disp.dataset.elapsed = s;
+        disp.textContent = fmt(s);
+      },250);
+      timers.set(id,{int});
+      btn.classList.add('running');
+      btn.querySelector('.ico').textContent='⏸';
+      btn.querySelector('.lab').textContent='Pausar';
+    }
+  }
+  function fmt(s){const m=Math.floor(s/60),r=s%60;return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0');}
+
+  /* ---- facility rating ---- */
+  function rate(el,n){
+    el.parentElement.querySelectorAll('b').forEach(o=>o.classList.remove('on'));
+    el.classList.add('on');
+    persist();
+  }
+
+  /* ---- collapse ---- */
+  function toggleCard(head){ head.closest('.card').classList.toggle('collapsed'); }
+  function toggleAll(collapse){ document.querySelectorAll('[data-task]').forEach(c=>c.classList.toggle('collapsed',collapse)); }
+
+  /* ---- session clock ---- */
+  let sStart=null, sInt=null;
+  function toggleSession(){
+    const btn=document.getElementById('sessBtn');
+    if(sInt){ clearInterval(sInt); sInt=null; btn.textContent='Retomar'; }
+    else {
+      const base = sStart ? (Date.now()-sStart) : 0;
+      sStart = Date.now() - base;
+      sInt=setInterval(()=>{
+        const s=Math.floor((Date.now()-sStart)/1000);
+        document.getElementById('sessClk').textContent=fmt(s);
+      },300);
+      btn.textContent='Pausar';
+    }
+  }
+
+  /* ---- light persistence (works when opened locally; ignored if blocked) ---- */
+  function persist(){
+    try{
+      const state={chk:{},rate:[],notes:{}};
+      document.querySelectorAll('input[type=checkbox]').forEach(c=>{if(c.id)state.chk[c.id]=c.checked;});
+      document.querySelectorAll('.opts').forEach((o,i)=>{const on=o.querySelector('b.on');state.rate[i]=on?on.textContent:null;});
+      document.querySelectorAll('textarea[data-note]').forEach(t=>{if(t.value)state.notes[t.dataset.note]=t.value;});
+      localStorage.setItem('appcondo-companion',JSON.stringify(state));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      const raw=localStorage.getItem('appcondo-companion'); if(!raw)return;
+      const s=JSON.parse(raw);
+      Object.entries(s.chk||{}).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.checked=v;});
+      document.querySelectorAll('.opts').forEach((o,i)=>{const v=s.rate&&s.rate[i];if(v){[...o.querySelectorAll('b')].forEach(b=>{if(b.textContent===v)b.classList.add('on');});}});
+      Object.entries(s.notes||{}).forEach(([id,v])=>{const t=document.querySelector(`textarea[data-note="${id}"]`);if(t)t.value=v;});
+    }catch(e){}
+  }
+  document.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox]'))persist();});
+  document.addEventListener('input',e=>{if(e.target.matches('textarea[data-note]'))persist();});
+
+  function resetAll(){
+    document.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);
+    document.querySelectorAll('b.on').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('textarea[data-note]').forEach(t=>t.value='');
+    document.querySelectorAll('[data-disp]').forEach(d=>{d.textContent='00:00';delete d.dataset.elapsed;});
+    timers.forEach(t=>clearInterval(t.int)); timers.clear();
+    document.querySelectorAll('.timer button.running').forEach(b=>{b.classList.remove('running');b.querySelector('.ico').textContent='▶';b.querySelector('.lab').textContent='Iniciar';});
+    try{localStorage.removeItem('appcondo-companion');}catch(e){}
+  }
+
+  restore();
+</script>
+</body>
+</html>
